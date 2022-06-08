@@ -1,0 +1,22 @@
+[
+    (
+        text: "Instagram",
+        uri: "https://www.instagram.com/reptethetetlen/",
+    ),
+    (
+        text: "GitHub",
+        uri: "https://github.com/atomgomba",
+    ),
+    (
+        text: "SO",
+        uri: "https://stackoverflow.com/users/176210/3k",
+    ),
+    (
+        text: "VJ Emulator",
+        uri: "https://ekezet.com/res/vjemu.html",
+    ),
+    (
+        text: "Party Zone",
+        uri: "https://ekezet.com/res/partizona.html",
+    ),
+]
