@@ -1,2 +1,3 @@
 #!/bin/sh
-wasm-pack build --target web --out-name lib --release
+rm -rf pkg
+wasm-pack build --out-dir pkg --target web --out-name lib --release --no-typescript

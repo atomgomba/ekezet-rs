@@ -1,5 +1,5 @@
 #!/bin/bash
-pushd lib
+pushd lib || exit
 ./build.sh
-popd
+popd || exit
 cargo build --release

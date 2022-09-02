@@ -1,18 +1,21 @@
-use sycamore::prelude::{Html, view, View};
-
 use crate::cfg::Link;
+use sycamore::prelude::*;
 
-pub fn index_page<G: Html>(links: Vec<Link>) -> View<G> {
-    let menu_items = create_menu(links);
+#[derive(Prop)]
+pub struct IndexProps {
+    links: Vec<Link>,
+}
 
-    view! {
+#[component]
+pub fn IndexPage<G: Html>(cx: Scope, props: IndexProps) -> View<G> {
+    view! { cx,
         html {
             head {
-                (header_fragment())
+                HeaderFragment {}
             }
             body {
                 nav {
-                    ul(role="menubar") { (menu_items) }
+                    ul(role="menubar") { MainMenu(links=props.links) }
                 }
 
                 div(id="background") {
@@ -23,27 +26,32 @@ pub fn index_page<G: Html>(links: Vec<Link>) -> View<G> {
     }
 }
 
-fn header_fragment<G: Html>() -> View<G> {
+#[component]
+fn HeaderFragment<G: Html>(cx: Scope) -> View<G> {
     let css = include_str!("../target/style.css");
 
-    view! {
+    view! { cx,
         meta(charset="utf-8")
         title { "ekezet.com" }
         meta(name="viewport", content="width=device-width, initial-scale=1")
         style(dangerously_set_inner_html=css.as_ref())
-        (bootstrap_fragment())
+        BootstrapFragment {}
     }
 }
 
-fn bootstrap_fragment<G: Html>() -> View<G> {
+#[component]
+fn BootstrapFragment<G: Html>(cx: Scope) -> View<G> {
     let bootstrap = format!("\n{}", include_str!("bootstrap.js"));
 
-    view! {
+    view! { cx,
         script(type="module", dangerously_set_inner_html=bootstrap.as_ref())
     }
 }
 
-fn create_menu<G: Html>(links: Vec<Link>) -> View<G> {
+#[component]
+fn MainMenu<G: Html>(cx: Scope, props: IndexProps) -> View<G> {
+    let links = props.links;
+
     View::new_fragment(
         links
             .iter()
@@ -56,7 +64,7 @@ fn create_menu<G: Html>(links: Vec<Link>) -> View<G> {
                     1.0 - ((index as f32) * (0.75 / links.len() as f32))
                 );
 
-                view! {
+                view! { cx,
                     li(style=opacity, role="menuitem") {
                         a(href=link.uri, title=title) { (link.text) }
                     }

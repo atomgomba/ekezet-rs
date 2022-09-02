@@ -1,10 +1,10 @@
 use actix_web::{get, http, middleware, web, App, HttpResponse, HttpServer, Responder};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-use sycamore::render_to_string;
+use sycamore::{render_to_string, view};
 
 use crate::cfg;
 use crate::cfg::Link;
-use crate::html::index_page;
+use crate::html::IndexPage;
 
 struct State {
     links: Vec<Link>,
@@ -27,7 +27,7 @@ pub fn run_server(host: &str, port: u16, use_ssl: bool) -> std::io::Result<()> {
             let mut builder = SslAcceptor::mozilla_intermediate_v5(SslMethod::tls())?;
             builder.set_private_key_file("app.key", SslFiletype::PEM)?;
             builder.set_certificate_chain_file("app.crt")?;
-            server.bind_openssl(format!("{}:{}", host, port), builder)?
+            server.bind_openssl(format!("{host}:{port}"), builder)?
         } else {
             server.bind((host, port))?
         }
@@ -38,12 +38,16 @@ pub fn run_server(host: &str, port: u16, use_ssl: bool) -> std::io::Result<()> {
 
 #[get("/")]
 async fn root(data: web::Data<State>) -> impl Responder {
-    let body = render_to_string(|| index_page(data.links.clone()));
+    let body = render_to_string(|cx| {
+        view! { cx,
+            IndexPage(links=data.links.clone())
+        }
+    });
     let preamble = include_str!("preamble.in");
 
     HttpResponse::Ok()
         .content_type(http::header::ContentType(mime::TEXT_HTML_UTF_8))
-        .body(format!("{}{}", preamble, body))
+        .body(format!("{preamble}{body}"))
 }
 
 #[get("/favicon.ico")]

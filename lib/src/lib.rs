@@ -12,7 +12,7 @@ static mut SPANS: Vec<HtmlElement> = vec![];
 static mut ANGD: usize = 0;
 const INIT_FRAME: Vec<FrameAttr> = Vec::new();
 static mut FRAMES: [Vec<FrameAttr>; 360] = [INIT_FRAME; 360];
-static mut IS_PLAYING: bool = false;
+static mut IS_PLAYING: bool = true;
 static mut DONT_PANIC: bool = false;
 
 #[wasm_bindgen(start)]
@@ -60,7 +60,7 @@ unsafe fn __reset_banner<T: ToString>(text: T) {
             let r = 245.0 * (rad + phase).cos() + 140.0;
             let g = 245.0 * (rad + phase * 1.5).cos() + 140.0;
             let b = 245.0 * (rad + phase * 2.0).cos() + 140.0;
-            let offset = format!("{}px", offset);
+            let offset = format!("{offset}px");
             let color = format!(
                 "rgb({}, {}, {})",
                 r.round() as usize,

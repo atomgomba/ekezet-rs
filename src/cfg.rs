@@ -23,16 +23,16 @@ pub fn init_links() {
 pub fn load_links() -> Vec<Link> {
     let path = get_links_path();
     let backup_path = get_links_backup_path();
-    let f = File::open(&path).expect(&format!("Cannot find config at: {}", path));
-    let links = from_reader(f).expect(&format!("Cannot load config at: {}", path));
-    std::fs::copy(&path, &backup_path).expect(&format!("Cannot save backup to: {}", backup_path));
+    let f = File::open(&path).expect(&format!("Cannot find config at: {path}"));
+    let links = from_reader(f).expect(&format!("Cannot load config at: {path}"));
+    std::fs::copy(&path, &backup_path).expect(&format!("Cannot save backup to: {backup_path}"));
     return links;
 }
 
 pub fn restore_links() {
     let path = get_links_path();
     let backup_path = get_links_backup_path();
-    std::fs::copy(&backup_path, &path).expect(&format!("Cannot restore backup to: {}", path));
+    std::fs::copy(&backup_path, &path).expect(&format!("Cannot restore backup to: {path}"));
 }
 
 fn get_links_path() -> &'static str {

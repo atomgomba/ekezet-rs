@@ -17,14 +17,14 @@ clap = { version = "3", features = ["derive"] }
 ekezet-lib = { path = "lib" }
 mime = "0.3.16"
 openssl = "0.10.40"
-ron = "0.7"
+ron = "0.8.0"
 serde = { version = "1", features = ["derive"] }
-sycamore = { version = "0.7.0", features = ["ssr"] }
+sycamore = { version = "0.8.0", features = ["ssr"] }
 
 [build-dependencies]
 base64 = "0.13.0"
 grass = "0.11.0"
-minifier = "^0.0.1"
+minifier = "0.2.2"
 
 [profile.release]
 lto = true
