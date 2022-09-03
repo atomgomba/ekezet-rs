@@ -1,4 +1,5 @@
-import init, { run } from './lib.js';
+import init, { run_text_anim, run_fade_in_anim } from './lib.js';
 
 await init();
-window.handle = run();
+window.anim_handle = run_text_anim();
+window.intro_handle = run_fade_in_anim();

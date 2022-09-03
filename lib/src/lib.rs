@@ -5,11 +5,13 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::*;
 
-const ANIM_INTERVAL_MS: i32 = 2;
+const TEXT_ANIM_INTERVAL_MS: i32 = 2;
+const FADE_ANIM_INTERVAL_MS: i32 = 10;
 const MAX_AMPLITUDE: i32 = 48;
 
 static mut SPANS: Vec<HtmlElement> = vec![];
 static mut ANGD: usize = 0;
+static mut ALPHA: f32 = 0.;
 const INIT_FRAME: Vec<FrameAttr> = Vec::new();
 static mut FRAMES: [Vec<FrameAttr>; 360] = [INIT_FRAME; 360];
 static mut IS_PLAYING: bool = true;
@@ -42,12 +44,12 @@ pub fn main() {
 
 unsafe fn reset_banner<T: ToString>(text: T) {
     IS_PLAYING = false;
-    __reset_banner(text);
+    __reset_spans(text);
     IS_PLAYING = true;
 }
 
 #[inline]
-unsafe fn __reset_banner<T: ToString>(text: T) {
+unsafe fn __reset_spans<T: ToString>(text: T) {
     let text = text.to_string();
     let num_chars = text.chars().count();
     let step = 360.0 / num_chars as f32;
@@ -78,6 +80,57 @@ unsafe fn __reset_banner<T: ToString>(text: T) {
     SPANS = replace_with_spans(text, document, banner);
 }
 
+#[wasm_bindgen]
+pub fn run_text_anim() -> Result<AnimHandle, JsValue> {
+    let cb = Closure::wrap(Box::new(|| unsafe { update_text_anim_frame() }) as Box<dyn FnMut()>);
+    let interval_id = window()
+        .unwrap()
+        .set_interval_with_callback_and_timeout_and_arguments_0(
+            cb.as_ref().unchecked_ref(),
+            TEXT_ANIM_INTERVAL_MS,
+        )?;
+
+    Ok(AnimHandle {
+        interval_id,
+        _closure: cb,
+    })
+}
+
+#[wasm_bindgen]
+pub fn run_fade_in_anim() -> Result<AnimHandle, JsValue> {
+    let document = window().unwrap().document().unwrap();
+    let mut interval_id: i32 = 0_i32;
+    let cb = Closure::wrap(Box::new(move || unsafe {
+        if ALPHA < 1.0 {
+            let banner = document
+                .get_element_by_id("banner")
+                .expect("banner should exist")
+                .dyn_ref::<HtmlElement>()
+                .unwrap()
+                .to_owned();
+            let alpha = format!("{:?}", ALPHA);
+            banner
+                .style()
+                .set_property("opacity", &alpha)
+                .expect("should set the alpha");
+            ALPHA += 0.01;
+        } else if 0 < interval_id {
+            window().unwrap().clear_interval_with_handle(interval_id);
+        }
+    }) as Box<dyn FnMut()>);
+    interval_id = window()
+        .unwrap()
+        .set_interval_with_callback_and_timeout_and_arguments_0(
+            cb.as_ref().unchecked_ref(),
+            FADE_ANIM_INTERVAL_MS,
+        )?;
+
+    Ok(AnimHandle {
+        interval_id,
+        _closure: cb,
+    })
+}
+
 fn replace_with_spans(orig_text: String, document: Document, banner: Element) -> Vec<HtmlElement> {
     let spans: Vec<HtmlElement> = orig_text
         .chars()
@@ -100,42 +153,8 @@ fn replace_with_spans(orig_text: String, document: Document, banner: Element) ->
     spans
 }
 
-struct FrameAttr {
-    offset: String,
-    color: String,
-}
-
-#[wasm_bindgen]
-pub struct AnimHandle {
-    interval_id: i32,
-    _closure: Closure<dyn FnMut()>,
-}
-
-impl Drop for AnimHandle {
-    fn drop(&mut self) {
-        let window = window().unwrap();
-        window.clear_interval_with_handle(self.interval_id);
-    }
-}
-
-#[wasm_bindgen]
-pub fn run() -> Result<AnimHandle, JsValue> {
-    let cb = Closure::wrap(Box::new(|| unsafe { update_frame() }) as Box<dyn FnMut()>);
-    let interval_id = window()
-        .unwrap()
-        .set_interval_with_callback_and_timeout_and_arguments_0(
-            cb.as_ref().unchecked_ref(),
-            ANIM_INTERVAL_MS,
-        )?;
-
-    Ok(AnimHandle {
-        interval_id,
-        _closure: cb,
-    })
-}
-
 #[inline]
-unsafe fn update_frame() {
+unsafe fn update_text_anim_frame() {
     if !IS_PLAYING {
         return;
     }
@@ -158,5 +177,23 @@ unsafe fn update_frame() {
     ANGD += 1;
     if 360 == ANGD {
         ANGD = 0;
+    }
+}
+
+struct FrameAttr {
+    offset: String,
+    color: String,
+}
+
+#[wasm_bindgen]
+pub struct AnimHandle {
+    interval_id: i32,
+    _closure: Closure<dyn FnMut()>,
+}
+
+impl Drop for AnimHandle {
+    fn drop(&mut self) {
+        let window = window().unwrap();
+        window.clear_interval_with_handle(self.interval_id);
     }
 }
