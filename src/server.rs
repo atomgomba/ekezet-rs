@@ -38,12 +38,12 @@ pub fn run_server(host: &str, port: u16, use_ssl: bool) -> std::io::Result<()> {
 
 #[get("/")]
 async fn root(data: web::Data<State>) -> impl Responder {
+    let preamble = include_str!("preamble.in");
     let body = render_to_string(|cx| {
         view! { cx,
             IndexPage(links=data.links.clone())
         }
     });
-    let preamble = include_str!("preamble.in");
 
     HttpResponse::Ok()
         .content_type(http::header::ContentType(mime::TEXT_HTML_UTF_8))

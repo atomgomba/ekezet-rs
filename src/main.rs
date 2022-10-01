@@ -13,7 +13,10 @@ const COMMAND_INIT: &str = "init";
 const COMMAND_RUN: &str = "run";
 const COMMAND_RESTORE: &str = "restore";
 
-fn cli() -> Command<'static> {
+const DEFAULT_HOST: &str = "127.0.0.1";
+const DEFAULT_PORT: u16 = 80;
+
+fn cli() -> Command {
     Command::new("ekezet-srv")
         .about("ekezet.com website")
         .subcommand_required(true)
@@ -47,21 +50,22 @@ fn init_command() {
 }
 
 fn run_command(matches: &ArgMatches) {
-    let host = matches.value_of("host").unwrap_or_default();
+    let default_host = DEFAULT_HOST.to_string();
+    let host = matches.get_one::<String>("host").unwrap_or(&default_host);
     let port: u16 = matches
-        .value_of("port")
-        .unwrap_or_default()
+        .get_one::<String>("port")
+        .unwrap_or(&format!("{DEFAULT_PORT}"))
         .parse()
-        .unwrap_or_default();
-    let use_ssl: bool = matches.is_present("no-ssl").not();
+        .unwrap_or(DEFAULT_PORT);
+    let use_ssl: bool = matches.contains_id("no-ssl").not();
 
-    print!("addr: {}:{}", host, port);
+    print!("addr: {host}:{port}");
     if use_ssl {
         print!(" (ssl)");
     }
     println!();
 
-    run_server(host, port, use_ssl).expect("Server cannot be started");
+    run_server(host.as_str(), port, use_ssl).expect("Server cannot be started");
 }
 
 fn restore_command() {
