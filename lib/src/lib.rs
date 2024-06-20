@@ -9,7 +9,7 @@ const TEXT_ANIM_INTERVAL_MS: i32 = 2;
 const FADE_ANIM_INTERVAL_MS: i32 = 10;
 const MAX_AMPLITUDE: i32 = 48;
 
-static mut SPANS: Vec<HtmlElement> = vec![];
+static mut SPANS: Vec<HtmlElement> = Vec::new();
 static mut ANGD: usize = 0;
 static mut ALPHA: f32 = 0.;
 const INIT_FRAME: Vec<FrameAttr> = Vec::new();

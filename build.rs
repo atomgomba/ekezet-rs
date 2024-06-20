@@ -1,3 +1,4 @@
+use base64::prelude::*;
 use std::fs::File;
 use std::io::Write;
 
@@ -32,7 +33,10 @@ fn process_stylesheet() {
     let out_file = &format!("{OUT_DIR}/style.css");
     let in_file = "src/style.sass";
     let woff_bytes = include_bytes!("res/04b_30.woff");
-    let data_url = &format!("data:font/woff; base64, {}", base64::encode(woff_bytes));
+    let data_url = &format!(
+        "data:font/woff; base64, {}",
+        BASE64_STANDARD.encode(woff_bytes),
+    );
     let opts = grass::Options::default().style(grass::OutputStyle::Compressed);
     let css = grass::from_path(in_file, &opts)
         .expect(&format!("Error parsing stylesheet: {in_file}"))

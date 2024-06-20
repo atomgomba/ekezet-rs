@@ -13,18 +13,18 @@ members = ["lib"]
 
 [dependencies]
 actix-web = { version = "4", features = ["openssl"] }
-clap = { version = "4.0.8", features = ["derive"] }
+clap = { version = "4.5.7", features = ["derive"] }
 ekezet-lib = { path = "lib" }
 mime = "0.3.16"
-openssl = "0.10.40"
+openssl = "0.10.64"
 ron = "0.8.0"
 serde = { version = "1", features = ["derive"] }
 sycamore = { version = "0.8.2", features = ["ssr"] }
 
 [build-dependencies]
-base64 = "0.13.0"
-grass = "0.11.0"
-minifier = "0.2.2"
+base64 = "0.22.1"
+grass = "0.13.3"
+minifier = "0.3.0"
 
 [profile.release]
 lto = true
