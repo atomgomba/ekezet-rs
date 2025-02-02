@@ -1,15 +1,15 @@
 [
     (
-        text: "Instagram",
-        uri: "https://www.instagram.com/reptethetetlen/",
+        text: "Blog",
+        uri: "https://atomgomba.github.io",
     ),
     (
         text: "GitHub",
         uri: "https://github.com/atomgomba",
     ),
     (
-        text: "SO",
-        uri: "https://stackoverflow.com/users/176210/3k",
+        text: "Instagram",
+        uri: "https://www.instagram.com/reptethetetlen/",
     ),
     (
         text: "VJ Emulator",
